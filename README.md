@@ -19,7 +19,6 @@ ghpulls.list(authOptions, 'rvagg', 'jsonist', function (err, pullslist) {
 })
 ```
 
-
 The auth data is compatible with [ghauth](https://github.com/rvagg/ghauth) so you can just connect them together to make a simple command-line application:
 
 ```js
@@ -40,6 +39,7 @@ ghauth(authOptions, function (err, authData) {
 })
 ```
 
+There is also a `ghpulls.listComments(auth, org, repo, num, options, callback)` API for review comments, currently doesn't seem like the end-point is quite complete, however.
 
 ## License
 
