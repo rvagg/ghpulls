@@ -1,6 +1,6 @@
 {
   "name": "ghpulls",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Interact with the GitHub pull requests API",
   "main": "ghpulls.js",
   "scripts": {
