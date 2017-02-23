@@ -150,3 +150,35 @@ test('test list multi-page pulls, options.afterDate includes partial', function 
     ]))
     .on('close'  , ghutils.verifyClose(t))
 })
+
+
+test('test list reviews', function (t) {
+  t.plan(8)
+
+  var auth     = { user: 'authuser', token: 'authtoken' }
+    , org      = 'testorg'
+    , repo     = 'testrepo'
+    , testData = [
+          {
+              response : [ { test1: 'data1' }, { test2: 'data2' } ]
+            , headers  : { } // no Link header, yet, apparently, so single page
+          }
+        //, { response: [] }
+      ]
+    , server
+
+  server = ghutils.makeServer(testData)
+    .on('ready', function () {
+      ghpulls.listReviews(xtend(auth), org, repo, 1234, ghutils.verifyData(t, testData[0].response))
+    })
+    .on('request', ghutils.verifyRequest(t, auth))
+    .on('request', function (request) {
+      // development header
+      t.equal(request.headers.accept, 'application/vnd.github.black-cat-preview+json')
+    })
+    .on('get', ghutils.verifyUrl(t, [
+        'https://api.github.com/repos/testorg/testrepo/pulls/1234/reviews?page=1'
+      //, 'https://api.github.com/repos/testorg/testrepo/pulls/1234/reviews?page=2'
+    ]))
+    .on('close'  , ghutils.verifyClose(t))
+})

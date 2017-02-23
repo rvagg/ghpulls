@@ -39,7 +39,19 @@ ghauth(authOptions, function (err, authData) {
 })
 ```
 
-There is also a `ghpulls.listComments(auth, org, repo, num, options, callback)` API for review comments, currently doesn't seem like the end-point is quite complete, however.
+## API
+
+### list(auth, org, repo[, options], callback)
+
+List pull requests for an org/user and repo combination
+
+### listComments(auth, org, repo, prNumber[, options], callback)
+
+List pull request _review_ comments for a given pull request number. ***This currently doesn't seem to work as the review API is still under development.***
+
+### listReviews(auth, org, repo, prNumber[, options], callback)
+
+List reviews for a given pull request number. This uses the experimental GitHub reviews API and is not guaranteed to continue to work properly! It's being enabled with a special development header that opts ghpulls in to this functionality. Caveat emptor!
 
 ## License
 
