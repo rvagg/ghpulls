@@ -21,11 +21,11 @@
   },
   "homepage": "https://github.com/rvagg/ghpulls",
   "dependencies": {
-    "ghutils": "~3.2.1"
+    "ghutils": "~3.3.0"
   },
   "devDependencies": {
     "bl": "~1.2.0",
-    "faucet": "0.0.1",
+    "faucet": "~0.0.1",
     "hyperquest": "~2.1.2",
     "require-subvert": "~0.1.0",
     "tape": "~4.6.3",
