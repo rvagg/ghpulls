@@ -24,11 +24,11 @@
     "ghutils": "~3.2.1"
   },
   "devDependencies": {
-    "bl": "~1.0.0",
+    "bl": "~1.2.0",
     "faucet": "0.0.1",
-    "hyperquest": "~1.2.0",
+    "hyperquest": "~2.1.2",
     "require-subvert": "~0.1.0",
-    "tape": "~4.2.2",
+    "tape": "~4.6.3",
     "xtend": "~4.0.1"
   }
 }
