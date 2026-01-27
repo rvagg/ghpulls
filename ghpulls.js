@@ -1,44 +1,21 @@
-const ghutils = require('ghutils')
+import { lister } from 'ghutils'
 
-function list (auth, org, repo, options, callback) {
-  if (typeof options == 'function') {
-    callback = options
-    options  = {}
-  }
+const defaultApiUrl = 'https://api.github.com'
 
-  var url = 'https://api.github.com/repos/' + org + '/' + repo + '/pulls?page=1'
-  ghutils.lister(auth, url, options, callback)
+export async function list (auth, org, repo, options = {}) {
+  const apiUrl = options._apiUrl || defaultApiUrl
+  const url = `${apiUrl}/repos/${org}/${repo}/pulls`
+  return lister(auth, url, options)
 }
 
-
-function listComments (auth, org, repo, num, options, callback) {
-  if (typeof options == 'function') {
-    callback = options
-    options  = {}
-  }
-
-  var url = 'https://api.github.com/repos/' + org + '/' + repo + '/pulls/' + num + '/comments?page=1'
-
-  ghutils.lister(auth, url, options, callback)
+export async function listComments (auth, org, repo, num, options = {}) {
+  const apiUrl = options._apiUrl || defaultApiUrl
+  const url = `${apiUrl}/repos/${org}/${repo}/pulls/${num}/comments`
+  return lister(auth, url, options)
 }
 
-
-function listReviews (auth, org, repo, num, options, callback) {
-  if (typeof options == 'function') {
-    callback = options
-    options  = {}
-  }
-
-  var url = 'https://api.github.com/repos/' + org + '/' + repo + '/pulls/' + num + '/reviews?page=1'
-
-  if (typeof options.headers != 'object')
-    options.headers = {}
-  options.headers.accept = 'application/vnd.github.black-cat-preview+json'
-
-  ghutils.lister(auth, url, options, callback)
+export async function listReviews (auth, org, repo, num, options = {}) {
+  const apiUrl = options._apiUrl || defaultApiUrl
+  const url = `${apiUrl}/repos/${org}/${repo}/pulls/${num}/reviews`
+  return lister(auth, url, options)
 }
-
-
-module.exports.list         = list
-module.exports.listComments = listComments
-module.exports.listReviews  = listReviews

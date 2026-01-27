@@ -1,58 +1,79 @@
 # ghpulls
 
-[![Build Status](https://secure.travis-ci.org/rvagg/ghpulls.png)](http://travis-ci.org/rvagg/ghpulls)
+**A Node.js library to interact with the GitHub pull requests API**
 
-**A node library to interact with the GitHub pull requests API**
+[![NPM](https://nodei.co/npm/ghpulls.svg?style=flat&data=n,v&color=blue)](https://nodei.co/npm/ghpulls/)
 
-[![NPM](https://nodei.co/npm/ghpulls.png?mini=true)](https://nodei.co/npm/ghpulls/)
+## Requirements
+
+- Node.js >= 20
 
 ## Example usage
 
 ```js
-const ghpulls     = require('ghpulls')
-    , authOptions = { user: 'rvagg', token: '24d5dee258c64aef38a66c0c5eca459c379901c2' }
+import * as ghpulls from 'ghpulls'
 
-// list all pulls in a repo
-ghpulls.list(authOptions, 'rvagg', 'jsonist', function (err, pullslist) {
-  // Array of pulls data for 'rvagg/jsonist'
-  console.log(pullslist)
-})
+const auth = { token: 'your-github-token' }
+
+// list all pull requests in a repo
+const pulls = await ghpulls.list(auth, 'rvagg', 'jsonist')
+console.log(pulls)
+
+// list review comments on a pull request
+const comments = await ghpulls.listComments(auth, 'rvagg', 'jsonist', 42)
+console.log(comments)
+
+// list reviews on a pull request
+const reviews = await ghpulls.listReviews(auth, 'rvagg', 'jsonist', 42)
+console.log(reviews)
 ```
 
-The auth data is compatible with [ghauth](https://github.com/rvagg/ghauth) so you can just connect them together to make a simple command-line application:
+The auth data is compatible with [ghauth](https://github.com/rvagg/ghauth) so you can connect them together:
 
 ```js
-const ghauth      = require('ghauth')
-    , ghpulls    = require('ghpulls')
-    , authOptions = {
-          configName : 'pulls-lister'
-        , scopes     : [ 'user' ]
-      }
+import ghauth from 'ghauth'
+import * as ghpulls from 'ghpulls'
 
-ghauth(authOptions, function (err, authData) {
-  ghpulls.list(authData, 'rvagg', 'node-levelup', function (err, list) {
-    console.log('Pull requests in rvagg/node-levelup:')
-    list.forEach(function (i) {
-      console.log('#%s: %s', i.number, i.title) 
-    })
-  })
+const auth = await ghauth({
+  configName: 'pulls-lister',
+  scopes: ['user']
+})
+
+const pulls = await ghpulls.list(auth, 'rvagg', 'node-levelup')
+console.log('Pull requests in rvagg/node-levelup:')
+pulls.forEach((p) => {
+  console.log('#%s: %s', p.number, p.title)
 })
 ```
 
 ## API
 
-### list(auth, org, repo[, options], callback)
+All methods return Promises.
 
-List pull requests for an org/user and repo combination
+### ghpulls.list(auth, org, repo, options)
 
-### listComments(auth, org, repo, prNumber[, options], callback)
+List pull requests for an org/user and repo combination.
 
-List pull request _review_ comments for a given pull request number. ***This currently doesn't seem to work as the review API is still under development.***
+### ghpulls.listComments(auth, org, repo, num, options)
 
-### listReviews(auth, org, repo, prNumber[, options], callback)
+List review comments for a given pull request number.
 
-List reviews for a given pull request number. This uses the experimental GitHub reviews API and is not guaranteed to continue to work properly! It's being enabled with a special development header that opts ghpulls in to this functionality. Caveat emptor!
+### ghpulls.listReviews(auth, org, repo, num, options)
+
+List reviews for a given pull request number.
+
+## Authentication
+
+See [ghauth](https://github.com/rvagg/ghauth) for an easy way to obtain and cache GitHub authentication tokens. The `auth` object returned by ghauth is directly compatible with all ghpulls methods.
+
+## See also
+
+* [ghissues](https://github.com/rvagg/ghissues) - interact with the GitHub issues API
+* [ghusers](https://github.com/rvagg/ghusers) - interact with the GitHub users API
+* [ghteams](https://github.com/rvagg/ghteams) - interact with the GitHub teams API
+* [ghrepos](https://github.com/rvagg/ghrepos) - interact with the GitHub repos API
+* [ghauth](https://github.com/rvagg/ghauth) - GitHub authentication
 
 ## License
 
-**ghpulls** is Copyright (c) 2015 Rod Vagg [@rvagg](https://github.com/rvagg) and licensed under the MIT licence. All rights not explicitly granted in the MIT license are reserved. See the included LICENSE file for more details.
+**ghpulls** is Copyright (c) 2015-2025 Rod Vagg [@rvagg](https://github.com/rvagg) and licensed under the MIT licence. All rights not explicitly granted in the MIT license are reserved. See the included LICENSE file for more details.
