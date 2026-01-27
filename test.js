@@ -1,152 +1,131 @@
-const http           = require('http')
-    , ghutils        = require('ghutils/test-util')
-    , test           = require('tape')
-    , xtend          = require('xtend')
-    , bl             = require('bl')
-    , ghpulls       = require('./')
+import { test } from 'node:test'
+import assert from 'node:assert'
+import { createMockServer, createMockServerWithHandler } from 'ghutils/test-util'
+import * as ghpulls from './ghpulls.js'
 
+test('list pulls', async () => {
+  const auth = { token: 'test-token' }
+  const testData = [{ id: 1, title: 'PR 1' }, { id: 2, title: 'PR 2' }]
 
-test('test list pulls', function (t) {
-  t.plan(10)
-
-  var auth     = { user: 'authuser', token: 'authtoken' }
-    , org      = 'testorg'
-    , repo     = 'testrepo'
-    , testData = [
-          {
-              response : [ { test1: 'data1' }, { test2: 'data2' } ]
-            , headers  : { link: '<https://api.github.com/repos/testorg/testrepo/pulls?page=2>; rel="next"' }
-          }
-        , { response: [] }
-      ]
-    , server
-
-  server = ghutils.makeServer(testData)
-    .on('ready', function () {
-      ghpulls.list(xtend(auth), org, repo, ghutils.verifyData(t, testData[0].response))
+  const server = await createMockServer({ response: testData })
+  try {
+    const results = await ghpulls.list(auth, 'testorg', 'testrepo', {
+      _apiUrl: server.baseUrl
     })
-    .on('request', ghutils.verifyRequest(t, auth))
-    .on('get', ghutils.verifyUrl(t, [
-        'https://api.github.com/repos/testorg/testrepo/pulls?page=1'
-      , 'https://api.github.com/repos/testorg/testrepo/pulls?page=2'
-    ]))
-    .on('close'  , ghutils.verifyClose(t))
+    assert.deepStrictEqual(results, testData)
+    assert.ok(server.requests[0].url.includes('/repos/testorg/testrepo/pulls'))
+    assert.strictEqual(server.requests[0].headers.authorization, 'Bearer test-token')
+  } finally {
+    await server.close()
+  }
 })
 
+test('list pulls with pagination', async () => {
+  const auth = { token: 'test-token' }
+  const page1 = [{ id: 1 }, { id: 2 }]
+  const page2 = [{ id: 3 }, { id: 4 }]
 
-test('test list multi-page pulls', function (t) {
-  t.plan(13)
+  let requestCount = 0
+  const mock = await createMockServerWithHandler((req, res) => {
+    requestCount++
+    const port = mock.address().port
+    if (requestCount === 1) {
+      res.setHeader('link', `<http://127.0.0.1:${port}/page2>; rel="next"`)
+      res.end(JSON.stringify(page1))
+    } else {
+      res.end(JSON.stringify(page2))
+    }
+  })
 
-  var auth     = { user: 'authuser', token: 'authtoken' }
-    , org      = 'testorg'
-    , repo     = 'testrepo'
-    , testData = [
-          {
-              response : [ { test1: 'data1' }, { test2: 'data2' } ]
-            , headers  : { link: '<https://api.github.com/repos/testorg/testrepo/pulls?page=2>; rel="next"' }
-          }
-        , {
-              response : [ { test1: 'data3' }, { test2: 'data4' } ]
-            , headers  : { link: '<https://api.github.com/repos/testorg/testrepo/pulls?page=3>; rel="next"' }
-          }
-        , { response: [] }
-      ]
-    , server
-
-  server = ghutils.makeServer(testData)
-    .on('ready', function () {
-      ghpulls.list(xtend(auth), org, repo, ghutils.verifyData(t, testData[0].response.concat(testData[1].response)))
+  try {
+    const results = await ghpulls.list(auth, 'testorg', 'testrepo', {
+      _apiUrl: mock.baseUrl
     })
-    .on('request', ghutils.verifyRequest(t, auth))
-    .on('get', ghutils.verifyUrl(t, [
-        'https://api.github.com/repos/testorg/testrepo/pulls?page=1'
-      , 'https://api.github.com/repos/testorg/testrepo/pulls?page=2'
-      , 'https://api.github.com/repos/testorg/testrepo/pulls?page=3'
-    ]))
-    .on('close'  , ghutils.verifyClose(t))
+    assert.deepStrictEqual(results, [...page1, ...page2])
+    assert.strictEqual(requestCount, 2)
+  } finally {
+    await mock.close()
+  }
 })
 
+test('list pulls returns empty array', async () => {
+  const auth = { token: 'test-token' }
 
-test('test list no pulls', function (t) {
-  t.plan(7)
-
-  var auth     = { user: 'authuser', token: 'authtoken' }
-    , org      = 'testorg'
-    , repo     = 'testrepo'
-    , testData = [ [] ]
-    , server
-
-  server = ghutils.makeServer(testData)
-    .on('ready', function () {
-      ghpulls.list(xtend(auth), org, repo, ghutils.verifyData(t, []))
+  const server = await createMockServer({ response: [] })
+  try {
+    const results = await ghpulls.list(auth, 'testorg', 'testrepo', {
+      _apiUrl: server.baseUrl
     })
-    .on('request', ghutils.verifyRequest(t, auth))
-    .on('get', ghutils.verifyUrl(t, [
-        'https://api.github.com/repos/testorg/testrepo/pulls?page=1'
-    ]))
-    .on('close'  , ghutils.verifyClose(t))
+    assert.deepStrictEqual(results, [])
+  } finally {
+    await server.close()
+  }
 })
 
-test('test list multi-page pulls, options.afterDate includes all', function (t) {
-  t.plan(13)
+test('list pull comments', async () => {
+  const auth = { token: 'test-token' }
+  const comments = [{ id: 1, body: 'Comment 1' }]
 
-  var auth     = { user: 'authuser', token: 'authtoken' }
-    , org      = 'testorg'
-    , repo     = 'testrepo'
-    , testData = [
-          {
-              response : [ { test1: 'data1', created_at: new Date('2015-12-14T05:58:14.421Z').toISOString() }, { test2: 'data2', created_at: new Date('2015-12-13T05:58:14.421Z').toISOString() } ]
-            , headers  : { link: '<https://api.github.com/repos/testorg/testrepo/pulls?page=2>; rel="next"' }
-          }
-        , {
-              response : [ { test1: 'data3', created_at: new Date('2015-12-12T05:58:14.421Z').toISOString() }, { test2: 'data4', created_at: new Date('2015-12-11T05:58:14.421Z').toISOString() } ]
-            , headers  : { link: '<https://api.github.com/repos/testorg/testrepo/pulls?page=3>; rel="next"' }
-          }
-        , { response: [] }
-      ]
-    , server
-
-  server = ghutils.makeServer(testData)
-    .on('ready', function () {
-      ghpulls.list(xtend(auth), org, repo, { afterDate: new Date('2015-12-10T05:58:14.421Z') }, ghutils.verifyData(t, testData[0].response.concat(testData[1].response)))
+  const server = await createMockServer({ response: comments })
+  try {
+    const results = await ghpulls.listComments(auth, 'testorg', 'testrepo', 42, {
+      _apiUrl: server.baseUrl
     })
-    .on('request', ghutils.verifyRequest(t, auth))
-    .on('get', ghutils.verifyUrl(t, [
-        'https://api.github.com/repos/testorg/testrepo/pulls?page=1'
-      , 'https://api.github.com/repos/testorg/testrepo/pulls?page=2'
-      , 'https://api.github.com/repos/testorg/testrepo/pulls?page=3'
-    ]))
-    .on('close'  , ghutils.verifyClose(t))
+    assert.deepStrictEqual(results, comments)
+    assert.ok(server.requests[0].url.includes('/repos/testorg/testrepo/pulls/42/comments'))
+  } finally {
+    await server.close()
+  }
 })
 
+test('list pull reviews', async () => {
+  const auth = { token: 'test-token' }
+  const reviews = [{ id: 1, state: 'APPROVED' }]
 
-test('test list multi-page pulls, options.afterDate includes partial', function (t) {
-  t.plan(10)
-
-  var auth     = { user: 'authuser', token: 'authtoken' }
-    , org      = 'testorg'
-    , repo     = 'testrepo'
-    , testData = [
-          {
-              response : [ { test1: 'data1', created_at: new Date('2015-12-14T05:58:14.421Z').toISOString() }, { test2: 'data2', created_at: new Date('2015-12-13T05:58:14.421Z').toISOString() } ]
-            , headers  : { link: '<https://api.github.com/repos/testorg/testrepo/pulls?page=2>; rel="next"' }
-          }
-        , {
-              response : [ { test1: 'data3', created_at: new Date('2015-12-12T05:58:14.421Z').toISOString() }, { test2: 'data4', created_at: new Date('2015-12-11T05:58:14.421Z').toISOString() } ]
-            , headers  : { link: '<https://api.github.com/repos/testorg/testrepo/pulls?page=3>; rel="next"' }
-          }
-        // also tests that we don't fetch any more beyond this point, i.e. only 2 requests needed
-      ]
-    , server
-
-  server = ghutils.makeServer(testData)
-    .on('ready', function () {
-      ghpulls.list(xtend(auth), org, repo, { afterDate: new Date('2015-12-11T15:58:14.421Z') }, ghutils.verifyData(t, testData[0].response.concat([ testData[1].response[0] ])))
+  const server = await createMockServer({ response: reviews })
+  try {
+    const results = await ghpulls.listReviews(auth, 'testorg', 'testrepo', 42, {
+      _apiUrl: server.baseUrl
     })
-    .on('request', ghutils.verifyRequest(t, auth))
-    .on('get', ghutils.verifyUrl(t, [
-        'https://api.github.com/repos/testorg/testrepo/pulls?page=1'
-      , 'https://api.github.com/repos/testorg/testrepo/pulls?page=2'
-    ]))
-    .on('close'  , ghutils.verifyClose(t))
+    assert.deepStrictEqual(results, reviews)
+    assert.ok(server.requests[0].url.includes('/repos/testorg/testrepo/pulls/42/reviews'))
+  } finally {
+    await server.close()
+  }
+})
+
+test('list pulls with afterDate', async () => {
+  const auth = { token: 'test-token' }
+  const page1 = [
+    { id: 1, created_at: '2024-01-15T00:00:00Z' },
+    { id: 2, created_at: '2024-01-14T00:00:00Z' }
+  ]
+  const page2 = [
+    { id: 3, created_at: '2024-01-13T00:00:00Z' },
+    { id: 4, created_at: '2024-01-10T00:00:00Z' }
+  ]
+
+  let requestCount = 0
+  const mock = await createMockServerWithHandler((req, res) => {
+    requestCount++
+    const port = mock.address().port
+    if (requestCount === 1) {
+      res.setHeader('link', `<http://127.0.0.1:${port}/page2>; rel="next"`)
+      res.end(JSON.stringify(page1))
+    } else {
+      res.end(JSON.stringify(page2))
+    }
+  })
+
+  try {
+    const afterDate = new Date('2024-01-12T00:00:00Z')
+    const results = await ghpulls.list(auth, 'testorg', 'testrepo', {
+      _apiUrl: mock.baseUrl,
+      afterDate
+    })
+    assert.strictEqual(results.length, 3)
+    assert.deepStrictEqual(results.map(r => r.id), [1, 2, 3])
+  } finally {
+    await mock.close()
+  }
 })
