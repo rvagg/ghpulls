@@ -1,3 +1,9 @@
+## [2.0.4](https://github.com/rvagg/ghpulls/compare/v2.0.3...v2.0.4) (2026-06-22)
+
+### Trivial Changes
+
+* **deps:** bump actions/checkout from 6.0.2 to 6.0.3 ([#7](https://github.com/rvagg/ghpulls/issues/7)) ([e8b719a](https://github.com/rvagg/ghpulls/commit/e8b719a3baaf7bfd83b7c2e6b2a41c80470140f3))
+
 ## [2.0.3](https://github.com/rvagg/ghpulls/compare/v2.0.2...v2.0.3) (2026-06-04)
 
 ### Trivial Changes
