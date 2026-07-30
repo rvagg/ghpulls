@@ -1,3 +1,9 @@
+## [2.0.9](https://github.com/rvagg/ghpulls/compare/v2.0.8...v2.0.9) (2026-07-30)
+
+### Trivial Changes
+
+* downgrade broken changelog maker, backfill entries ([#13](https://github.com/rvagg/ghpulls/issues/13)) ([62c7aa4](https://github.com/rvagg/ghpulls/commit/62c7aa44b94d838b819753cf26cecda7bd6cff6a))
+
 ## [2.0.8](https://github.com/rvagg/ghpulls/compare/v2.0.7...v2.0.8) (2026-07-29)
 
 ### Trivial Changes
