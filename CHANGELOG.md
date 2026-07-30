@@ -1,8 +1,20 @@
 ## [2.0.8](https://github.com/rvagg/ghpulls/compare/v2.0.7...v2.0.8) (2026-07-29)
 
+### Trivial Changes
+
+* **deps:** bump the github-actions-minor-patch group with 2 updates ([#12](https://github.com/rvagg/ghpulls/issues/12)) ([8650325](https://github.com/rvagg/ghpulls/commit/8650325759061fb23625e4e7a1cfa185da216e0e))
+
 ## [2.0.7](https://github.com/rvagg/ghpulls/compare/v2.0.6...v2.0.7) (2026-07-22)
 
+### Trivial Changes
+
+* **ci:** slow down dependabot, add depsound, pin action hashes ([#11](https://github.com/rvagg/ghpulls/issues/11)) ([5a7d627](https://github.com/rvagg/ghpulls/commit/5a7d6278900c6794e8c8173f135212188b81489f))
+
 ## [2.0.6](https://github.com/rvagg/ghpulls/compare/v2.0.5...v2.0.6) (2026-07-08)
+
+### Trivial Changes
+
+* **deps-dev:** bump conventional-changelog-conventionalcommits from 9.3.1 to 10.2.0 ([1a9d88c](https://github.com/rvagg/ghpulls/commit/1a9d88c803ed24778c6223a5be97d880eec7c91c))
 
 ## [2.0.5](https://github.com/rvagg/ghpulls/compare/v2.0.4...v2.0.5) (2026-06-23)
 
