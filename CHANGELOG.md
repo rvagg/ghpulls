@@ -1,3 +1,9 @@
+## [2.0.11](https://github.com/rvagg/ghpulls/compare/v2.0.10...v2.0.11) (2026-08-03)
+
+### Trivial Changes
+
+* **deps-dev:** bump @semantic-release/git from 10.0.1 to 11.0.1 ([#15](https://github.com/rvagg/ghpulls/issues/15)) ([9011753](https://github.com/rvagg/ghpulls/commit/90117537268a6b8730c211011a002c41dcdee4a7))
+
 ## [2.0.10](https://github.com/rvagg/ghpulls/compare/v2.0.9...v2.0.10) (2026-08-03)
 
 ### Trivial Changes
