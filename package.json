@@ -1,6 +1,6 @@
 {
   "name": "ghpulls",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "Interact with the GitHub pull requests API",
   "type": "module",
   "exports": "./ghpulls.js",

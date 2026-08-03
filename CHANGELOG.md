@@ -1,3 +1,9 @@
+## [2.0.10](https://github.com/rvagg/ghpulls/compare/v2.0.9...v2.0.10) (2026-08-03)
+
+### Trivial Changes
+
+* **deps-dev:** bump @semantic-release/changelog from 6.0.3 to 7.0.0 ([#14](https://github.com/rvagg/ghpulls/issues/14)) ([bbc546b](https://github.com/rvagg/ghpulls/commit/bbc546b14d86a1c95d21f62bd4847032eed668ca))
+
 ## [2.0.9](https://github.com/rvagg/ghpulls/compare/v2.0.8...v2.0.9) (2026-07-30)
 
 ### Trivial Changes
