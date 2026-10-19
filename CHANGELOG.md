@@ -1,3 +1,9 @@
+## [2.0.13](https://github.com/rvagg/ghpulls/compare/v2.0.12...v2.0.13) (2026-10-19)
+
+### Trivial Changes
+
+* **deps:** bump actions/setup-node ([#20](https://github.com/rvagg/ghpulls/issues/20)) ([a03134c](https://github.com/rvagg/ghpulls/commit/a03134ca2852408b8959e6ecff13091ea5b62cf1))
+
 ## [2.0.12](https://github.com/rvagg/ghpulls/compare/v2.0.11...v2.0.12) (2026-08-05)
 
 ### Trivial Changes
