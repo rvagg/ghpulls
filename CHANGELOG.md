@@ -1,3 +1,9 @@
+## [2.0.15](https://github.com/rvagg/ghpulls/compare/v2.0.14...v2.0.15) (2026-11-04)
+
+### Trivial Changes
+
+* **deps:** bump the github-actions-minor-patch group with 2 updates ([#23](https://github.com/rvagg/ghpulls/issues/23)) ([82ab14d](https://github.com/rvagg/ghpulls/commit/82ab14daf13a02e22fb2450bd754d3ccd4884602))
+
 ## [2.0.14](https://github.com/rvagg/ghpulls/compare/v2.0.13...v2.0.14) (2026-10-30)
 
 ### Trivial Changes
